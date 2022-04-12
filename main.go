@@ -13,7 +13,7 @@ func main() {
 
     router := httprouter.New()
     uc := controllers.NewUserController(getSession())
-    // router.GET("/user", getUsers)
+    router.GET("/user", uc.GetAllUser)
     router.GET("/user/:id", uc.GetUser)
     router.POST("/user", uc.CreateUser)
     http.ListenAndServe("localhost:3000",router)
