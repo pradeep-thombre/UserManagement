@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 
 	"assingmentTask.com/userManagement/configs"
 	"assingmentTask.com/userManagement/routes"
@@ -20,7 +19,6 @@ func main() {
 
 	//routes
     routes.UserRoute(router) 
-	fmt.Println("Inside main")
 	router.Start("localhost:3000")
 }
 

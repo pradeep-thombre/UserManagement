@@ -9,7 +9,6 @@ import (
 
 func UserRoute(router *echo.Echo)  {
     //All routes related to users comes here
-	fmt.Println("inside user route")
 	router.GET("/", func(c echo.Context) error {
 		fmt.Println("Simple route")
 		return nil
@@ -17,4 +16,5 @@ func UserRoute(router *echo.Echo)  {
 	router.POST("/users", controllers.CreateUser) 
 	router.GET("/users/:id", controllers.GetAUser)
 	router.GET("/users", controllers.GetAllUsers)
+	router.DELETE("/users/:id", controllers.DeleteAUser)
 }

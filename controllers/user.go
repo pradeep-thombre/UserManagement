@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 	"time"
 
@@ -37,6 +36,8 @@ func CreateUser(c echo.Context) error {
     newUser := models.User{
         Id:       primitive.NewObjectID(),
         Name:     user.Name,
+        Email:     user.Email,
+        Role:     user.Role,
     }
 
     result, err := userCollection.InsertOne(ctx, newUser)
@@ -51,11 +52,7 @@ func GetAUser(c echo.Context) error {
     userId := c.Param("id")
     var user models.User
     defer cancel()
-
-    fmt.Println("usersid",userId)
-    objId, error := primitive.ObjectIDFromHex(userId)
-    fmt.Println(objId)
-    fmt.Println(error)
+    objId, _ := primitive.ObjectIDFromHex(userId)
     err := userCollection.FindOne(ctx, bson.M{"_id": objId}).Decode(&user)
 
     if err != nil {
@@ -66,7 +63,6 @@ func GetAUser(c echo.Context) error {
 }
 
 func GetAllUsers(c echo.Context) error {
-    fmt.Println("Inside get all users")
     ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
     var users []models.User
     defer cancel()
@@ -85,9 +81,29 @@ func GetAllUsers(c echo.Context) error {
             return c.JSON(http.StatusInternalServerError, responses.UserResponse{Status: http.StatusInternalServerError, Message: "error", Data: &echo.Map{"data": err.Error()}})
         }
 
-        fmt.Println("line 84",singleUser,singleUser.Id.Hex(),singleUser.Id)
         users = append(users, singleUser)
     }
 
     return c.JSON(http.StatusOK, responses.UserResponse{Status: http.StatusOK, Message: "success", Data: &echo.Map{"data": users}})
+}
+
+
+func DeleteAUser(c echo.Context) error {
+    ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+    userId := c.Param("id")
+    defer cancel()
+
+    objId, _ := primitive.ObjectIDFromHex(userId)
+
+    result, err := userCollection.DeleteOne(ctx, bson.M{"_id": objId})
+
+    if err != nil {
+        return c.JSON(http.StatusInternalServerError, responses.UserResponse{Status: http.StatusInternalServerError, Message: "error", Data: &echo.Map{"data": err.Error()}})
+    }
+
+    if result.DeletedCount < 1 {
+        return c.JSON(http.StatusNotFound, responses.UserResponse{Status: http.StatusNotFound, Message: "error", Data: &echo.Map{"data": "User with specified ID not found!"}})
+    }
+
+    return c.JSON(http.StatusOK, responses.UserResponse{Status: http.StatusOK, Message: "success", Data: &echo.Map{"data": "User successfully deleted!"}})
 }

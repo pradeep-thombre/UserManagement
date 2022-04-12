@@ -13,7 +13,7 @@ Things covered in this assignment:
 - Creating a simple echo application
 - Running echo application on a specific port
 
-## Additional APIS (Pending)
+## Additional APIS
 
 - Add a POST API /users
 	On calling this API, a new user should be stored in-memory. 
